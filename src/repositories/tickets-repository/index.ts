@@ -18,6 +18,9 @@ async function findTicketByEnrollmentId(enrollmentId: number): Promise<
     },
   });
 }
+async function deleteOldTicketsByEnrollmentId(enrollmentId: number) {
+  return prisma.ticket.deleteMany({ where: { enrollmentId } });
+}
 
 async function createTicket(ticket: CreateTicketParams) {
   return prisma.ticket.create({
@@ -65,4 +68,5 @@ export default {
   findTickeyById,
   findTickeWithTypeById,
   ticketProcessPayment,
+  deleteOldTicketsByEnrollmentId,
 };
