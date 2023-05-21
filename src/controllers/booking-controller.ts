@@ -32,6 +32,16 @@ export async function bookingRoom(req: AuthenticatedRequest, res: Response, next
   }
 }
 
+export async function getBookingByRoomId(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+  try {
+    const roomId = Number(req.params.roomId);
+    const bookings = await bookingService.getBookingRoomById(roomId);
+    return res.status(httpStatus.OK).send(bookings);
+  } catch (error) {
+    next(error);
+  }
+}
+
 export async function changeBooking(req: AuthenticatedRequest, res: Response, next: NextFunction) {
   const { userId } = req;
   const bookingId = Number(req.params.bookingId);
