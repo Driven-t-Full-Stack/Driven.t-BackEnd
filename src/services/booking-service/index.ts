@@ -25,6 +25,12 @@ async function checkValidBooking(roomId: number) {
   if (room.capacity <= bookings.length) throw cannotBookingError();
 }
 
+async function checkValidRoomId(roomId: number) {
+  const room = await roomRepository.findById(roomId);
+
+  if (!room) throw notFoundError();
+}
+
 async function getBooking(userId: number) {
   const booking = await bookingRepository.findByUserId(userId);
   if (!booking) throw notFoundError();
@@ -43,7 +49,7 @@ async function bookingRoomById(userId: number, roomId: number) {
 
 async function getBookingRoomById(roomId: number) {
   if (!roomId) throw badRequestError();
-  await checkValidBooking(roomId);
+  await checkValidRoomId(roomId);
 
   return bookingRepository.findByRoomId(roomId);
 }
