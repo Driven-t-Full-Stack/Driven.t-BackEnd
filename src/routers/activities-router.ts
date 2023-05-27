@@ -1,8 +1,9 @@
 import { Router } from 'express';
+import { authenticateToken } from '@/middlewares';
 import { getDefaultActivities } from '@/controllers';
 
 const activitiesRouter = Router();
 
-activitiesRouter.get('/', getDefaultActivities);
+activitiesRouter.all('/*', authenticateToken).get('/', getDefaultActivities);
 
 export { activitiesRouter };
