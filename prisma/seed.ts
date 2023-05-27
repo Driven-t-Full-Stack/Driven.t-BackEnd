@@ -1,5 +1,6 @@
-import { DayType, LocationType, PrismaClient } from "@prisma/client";
+import { LocationType, PrismaClient } from "@prisma/client";
 import dayjs from "dayjs";
+import faker from '@faker-js/faker';
 const prisma = new PrismaClient();
 
 async function main() {
@@ -14,6 +15,68 @@ async function main() {
         endsAt: dayjs().add(21, "days").toDate(),
       },
     });
+  }
+  
+  let lastSpecificDays: string[] = [];
+
+  if (event) {
+    const startsAt = dayjs(event.startsAt);
+    const endsAt = dayjs(event.endsAt);
+  
+    let currentDate = endsAt;
+    let consecutiveDaysCount = 0;
+  
+    while (consecutiveDaysCount < 3 && currentDate.isAfter(startsAt)) {
+      const dayOfWeek = currentDate.day();
+  
+      if ([5, 6, 0].includes(dayOfWeek)) {
+        lastSpecificDays.unshift(currentDate.format("dddd, DD/MM"));
+        consecutiveDaysCount++;
+      } else {
+        consecutiveDaysCount = 0;
+        lastSpecificDays.length = 0;
+      }
+  
+      currentDate = currentDate.subtract(1, 'day');
+    }
+  } else {
+    console.log('Evento não encontrado');
+  }
+
+  if (lastSpecificDays.length > 0) {
+    let newSpecificDaysArray: string[] = [];
+    
+    for( let i = 0 ; i < lastSpecificDays.length ; i++ ) {
+      let word = lastSpecificDays[i].split(", ");
+      
+      for ( let i = 0 ; i < word.length ; i++ ) {
+        newSpecificDaysArray.push(word[i])
+      }
+    }
+
+    for ( let i = 0 ; i < newSpecificDaysArray.length ; i++ ) {
+      switch (newSpecificDaysArray[i]) {
+        case "Friday":
+          newSpecificDaysArray[i] = "Sexta";
+          break
+        case "Saturday":
+          newSpecificDaysArray[i] = "Sábado";
+          break
+        case "Sunday":
+          newSpecificDaysArray[i] = "Domingo";
+          break
+        default:
+          newSpecificDaysArray[i];
+          break
+      }
+    }
+
+    let newDatesArray: string[] = []
+    for ( let i = 0 ; i < newSpecificDaysArray.length ; i += 2 ) {
+      newDatesArray.push(newSpecificDaysArray[i] + ', ' + newSpecificDaysArray[i+1])
+    }
+    
+    lastSpecificDays = newDatesArray;
   }
 
   let time = await prisma.time.findFirst();
@@ -39,85 +102,66 @@ async function main() {
 
   let activities = await prisma.activities.findFirst();
   if (!activities) {
-  const friday: DayType = 'Sexta';
+
   const locations: LocationType[] = [
-    'Auditorio_Lateral',
     'Auditorio_Principal',
+    'Auditorio_Principal',
+    'Auditorio_Lateral',
+    'Sala_de_Workshops',
+    'Sala_de_Workshops',
     'Sala_de_Workshops',
   ];
 
-  const activitiesList = [
-    {
-      eventId: 1,
-      title: 'Oppenheimer',
-      location: locations[1],
-      date: friday,
-      timeId: 1,
-      availableSlots: 34
-      
-    },
-    {
-      eventId: 1,
-      title: 'Barbie',
-      location: locations[1],
-      date: friday,
-      timeId: 5,
-      availableSlots: 7
-      
-    },
-    {
-      eventId: 1,
-      title: 'The Flash',
-      location: locations[0],
-      date: friday,
-      timeId: 3,
-      availableSlots: 16
-      
-    },
-    {
-      eventId: 1,
-      title: "Aprendendo Stop Motion com 'Fuga das Galinhas'",
-      location: locations[3],
-      date: friday,
-      timeId: 1,
-      availableSlots: 10
-      
-    },
-    {
-      eventId: 1,
-      title: "Saiba como criar boas análises de filmes",
-      location: locations[3],
-      date: friday,
-      timeId: 4,
-      availableSlots: 15
-      
-    },
-    {
-      eventId: 1,
-      title: "Workshop para Dublês: Imitando 'Missão Impossível'",
-      location: locations[3],
-      date: friday,
-      timeId: 6,
-      availableSlots: 13
-      
-    },
-  ];
-    for (const activity of activitiesList) {
-      await prisma.activities.create({
-        data: {
-          eventId: activity.eventId,
-          title: activity.title,
-          location: activity.location,
-          date: activity.date,
-          timeId: activity.timeId,
-          availableSlots: activity.availableSlots 
-        },
-      });
+  const activitiesList: {
+    eventId: number;
+    title: string;
+    location: LocationType;
+    date: string;
+    timeId: number;
+    availableSlots: number;
+}[] = [];
+
+  const timeIds = [1, 5, 3, 1, 4, 6];
+
+  for (let i = 0; i < 18; i++) {
+    const eventId = event.id;
+    const title = faker.lorem.words(5);
+    const location = locations[i % 6];
+    const date = lastSpecificDays[Math.floor(i / 6)];
+    const timeId = timeIds[i % 6];
+    const availableSlots = faker.random.number({ min: 0, max: 20 });
+  
+    const activity = {
+      eventId,
+      title,
+      location,
+      date,
+      timeId,
+      availableSlots,
+    };
+  
+    activitiesList.push(activity);
+  }
+
+  for (const activity of activitiesList) {
+    await prisma.activities.create({
+      data: {
+        eventId: activity.eventId,
+        title: activity.title,
+        location: activity.location,
+        date: activity.date,
+        timeId: activity.timeId,
+        availableSlots: activity.availableSlots 
+      },
+    });
   }
 }
 
-  console.log( event, time, activities );
+console.log(event, time, activities)
+
 }
+  
+  
 
 main()
   .catch((e) => {
