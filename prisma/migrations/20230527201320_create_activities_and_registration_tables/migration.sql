@@ -1,16 +1,13 @@
 -- CreateEnum
 CREATE TYPE "LocationType" AS ENUM ('Auditorio_Lateral', 'Auditorio_Principal', 'Sala_de_Workshops');
 
--- CreateEnum
-CREATE TYPE "DayType" AS ENUM ('Sexta', 'Sabado', 'Domingo');
-
 -- CreateTable
 CREATE TABLE "Activities" (
     "id" SERIAL NOT NULL,
     "eventId" INTEGER NOT NULL,
     "title" VARCHAR(50) NOT NULL,
-    "location" "LocationType",
-    "date" "DayType",
+    "location" "LocationType" NOT NULL,
+    "date" TEXT NOT NULL,
     "timeId" INTEGER NOT NULL,
     "availableSlots" INTEGER NOT NULL,
 
