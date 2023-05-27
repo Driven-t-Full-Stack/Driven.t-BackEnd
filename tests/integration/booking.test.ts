@@ -103,7 +103,7 @@ describe('GET /booking', () => {
 
 describe('GET /booking/:roomId', () => {
   it('should respond with status 401 if no token is given', async () => {
-    const response = await server.get('/booking');
+    const response = await server.get('/booking/getBooking');
 
     expect(response.status).toBe(httpStatus.UNAUTHORIZED);
   });
@@ -111,7 +111,7 @@ describe('GET /booking/:roomId', () => {
   it('should respond with status 401 if given token is not valid', async () => {
     const token = faker.lorem.word();
 
-    const response = await server.get('/booking').set('Authorization', `Bearer ${token}`);
+    const response = await server.get('/booking/getBooking').set('Authorization', `Bearer ${token}`);
 
     expect(response.status).toBe(httpStatus.UNAUTHORIZED);
   });
@@ -120,7 +120,7 @@ describe('GET /booking/:roomId', () => {
     const userWithoutSession = await createUser();
     const token = jwt.sign({ userId: userWithoutSession.id }, process.env.JWT_SECRET);
 
-    const response = await server.get('/booking').set('Authorization', `Bearer ${token}`);
+    const response = await server.get('/booking/getBooking').set('Authorization', `Bearer ${token}`);
 
     expect(response.status).toBe(httpStatus.UNAUTHORIZED);
   });
@@ -137,7 +137,7 @@ describe('GET /booking/:roomId', () => {
       const hotel = await createHotel();
       const room = await createRoomWithHotelId(hotel.id);
 
-      const response = await server.get('/booking').set('Authorization', `Bearer ${token}`);
+      const response = await server.get('/booking/getBooking').set('Authorization', `Bearer ${token}`);
 
       expect(response.status).toEqual(httpStatus.NOT_FOUND);
     });
@@ -158,12 +158,16 @@ describe('GET /booking/:roomId', () => {
         roomId: room.id,
       });
 
-      const response = await server.get(`/booking/${room.id}`).set('Authorization', `Bearer ${token}`);
+      const response = await server.get(`/booking/getBooking/${room.id}`).set('Authorization', `Bearer ${token}`);
 
       expect(response.status).toEqual(httpStatus.OK);
       expect(response.body).toEqual([
         {
           id: booking.id,
+          userId: expect.any(Number),
+          roomId: expect.any(Number),
+          createdAt: expect.any(String),
+          updatedAt: expect.any(String),
           Room: {
             id: expect.any(Number),
             name: expect.any(String),

@@ -48,7 +48,7 @@ async function main() {
 
   const activitiesList = [
     {
-      eventId: 1,
+      eventId: 51,
       title: 'Oppenheimer',
       location: locations[1],
       date: friday,
@@ -57,7 +57,7 @@ async function main() {
       
     },
     {
-      eventId: 1,
+      eventId: 51,
       title: 'Barbie',
       location: locations[1],
       date: friday,
@@ -66,7 +66,7 @@ async function main() {
       
     },
     {
-      eventId: 1,
+      eventId: 51,
       title: 'The Flash',
       location: locations[0],
       date: friday,
@@ -75,7 +75,7 @@ async function main() {
       
     },
     {
-      eventId: 1,
+      eventId: 51,
       title: "Aprendendo Stop Motion com 'Fuga das Galinhas'",
       location: locations[3],
       date: friday,
@@ -84,7 +84,7 @@ async function main() {
       
     },
     {
-      eventId: 1,
+      eventId: 51,
       title: "Saiba como criar boas análises de filmes",
       location: locations[3],
       date: friday,
@@ -93,7 +93,7 @@ async function main() {
       
     },
     {
-      eventId: 1,
+      eventId: 51,
       title: "Workshop para Dublês: Imitando 'Missão Impossível'",
       location: locations[3],
       date: friday,
@@ -102,10 +102,10 @@ async function main() {
       
     },
   ];
-    for (const activity of activitiesList) {
+    /*for (const activity of activitiesList) {
       await prisma.activities.create({
         data: {
-          eventId: activity.eventId,
+          eventId: 51,
           title: activity.title,
           location: activity.location,
           date: activity.date,
@@ -113,7 +113,7 @@ async function main() {
           availableSlots: activity.availableSlots 
         },
       });
-  }
+  }*/
 }
 
   console.log( event, time, activities );
