@@ -16,7 +16,79 @@ async function main() {
       },
     });
   }
+
+  let ticketType = await prisma.ticketType.findFirst();
+  if (!ticketType) {
+    const ticketTypes = [
+      {
+        name: "Online",
+        price: 100,
+        isRemote: true,
+        includesHotel: false,
+      },
+      {
+        name: "Presencial + Sem Hotel",
+        price: 250,
+        isRemote: false,
+        includesHotel: false,
+      },
+      {
+        name: "Presencial + Com Hotel",
+        price: 600,
+        isRemote: false,
+        includesHotel: true,
+      },
+    ];
   
+    for (const ticketType of ticketTypes) {
+      await prisma.ticketType.create({
+        data: {
+          name: ticketType.name,
+          price: ticketType.price,
+          isRemote: ticketType.isRemote,
+          includesHotel: ticketType.includesHotel,
+          updatedAt: new Date(),
+        },
+      });
+    }
+  }
+  
+  let hotel = await prisma.hotel.findFirst();
+  if (!hotel) {
+    const createHotelSeed = async () => {
+      const hotel = await prisma.hotel.create({
+        data: {
+          name: faker.company.companyName(),
+          image: faker.image.imageUrl(),
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      });
+    
+      const roomCapacityRange = [1, 2, 3];
+    
+      for (let i = 0; i < 12; i++) {
+        const capacity = faker.random.arrayElement(roomCapacityRange);
+    
+        await prisma.room.create({
+          data: {
+            name: `Room ${i + 1}`,
+            capacity,
+            hotelId: hotel.id,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          },
+        });
+      }
+    };
+    
+    for (let i = 0; i < 3; i++) {
+      createHotelSeed();
+    }
+  };
+  
+
+
   let lastSpecificDays: string[] = [];
 
   if (event) {
