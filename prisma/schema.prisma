@@ -152,19 +152,13 @@ enum LocationType {
   Sala_de_Workshops
 }
 
-enum DayType {
-  Sexta
-  Sabado
-  Domingo
-}
-
 model Activities {
   id             Int            @id @default(autoincrement())
   eventId        Int
   event          Event          @relation(fields: [eventId], references: [id])
   title          String         @db.VarChar(50)
   location       LocationType
-  date           DayType
+  date           String
   time           Time           @relation(fields: [timeId], references: [id])
   timeId         Int
   availableSlots Int
