@@ -197,7 +197,7 @@ async function main() {
 
   for (let i = 0; i < 18; i++) {
     const eventId = event.id;
-    const title = faker.lorem.words(5);
+    const title = faker.lorem.words(3);
     const location = locations[i % 6];
     const date = lastSpecificDays[Math.floor(i / 6)];
     const timeId = timeIds[i % 6];
